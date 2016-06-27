@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBusters", "CodeBusters\CodeBusters.csproj", "{4713C095-780B-43DE-BF20-94D06CF67693}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contests", "Contests", "{55C72FA5-6458-4E3E-ADE5-069CAC9D114D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4713C095-780B-43DE-BF20-94D06CF67693} = {55C72FA5-6458-4E3E-ADE5-069CAC9D114D}
 	EndGlobalSection
 EndGlobal
