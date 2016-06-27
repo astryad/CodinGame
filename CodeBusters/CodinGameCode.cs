@@ -101,10 +101,68 @@ internal class GameTurn
 
         foreach (var buster in _teamBusters)
         {
-            instructions.Add(buster.Id, new MoveInstruction(8000, 4500));
+            var nextInstruction = FindNextInstruction(buster);
+            instructions.Add(buster.Id, nextInstruction);
         }
 
         return instructions;
+    }
+
+    private IBusterInstruction FindNextInstruction(Buster buster)
+    {
+        if (buster.IsCarryingGhost)
+        {
+            double homeDist = ComputeDistanceFromHome(buster);
+            if(homeDist < 1600)
+                return new ReleaseInstruction();
+
+            if (_teamId == 0)
+            {
+                return new MoveInstruction(0, 0);
+            }
+            else
+            {
+                return new MoveInstruction(16000, 9000);
+            }
+        }
+
+        var ghostInRange = FindGhostInRange(buster);
+        if (ghostInRange != null)
+        {
+            return new BustIntruction(ghostInRange.Id);
+        }
+
+        var anyGhost = _ghosts.FirstOrDefault();
+        if(anyGhost != null)
+            return new MoveInstruction(anyGhost.X, anyGhost.Y);
+
+        return new MoveInstruction(8000, 4500);
+    }
+
+    private double ComputeDistanceFromHome(Buster buster)
+    {
+        int homeX = _teamId == 0 ? 0 : 16000;
+        int homeY = _teamId == 0 ? 0 : 9000;
+
+        var distX = homeX - buster.X;
+        var distY = homeY - buster.Y;
+
+        return Math.Sqrt(distX*distX + distY*distY);
+    }
+
+    private Ghost FindGhostInRange(Buster buster)
+    {
+        foreach (var ghost in _ghosts)
+        {
+            var distX = buster.X - ghost.X;
+            var distY = buster.Y - ghost.Y;
+            var dist = Math.Sqrt(distX*distX + distY*distY);
+
+            if (dist > 900 && dist < 1760)
+                return ghost;
+        }
+
+        return null;
     }
 
     public void ReadEntities(IConsole console)
@@ -186,11 +244,18 @@ class ReleaseInstruction : IBusterInstruction
 
 class BustIntruction : IBusterInstruction
 {
+    public int GhostId { get; }
+
+    public BustIntruction(int ghostId)
+    {
+        GhostId = ghostId;
+    }
+
     public string Type => "BUST";
 
     public override string ToString()
     {
-        return Type;
+        return $"{Type} {GhostId}";
     }
 }
 
