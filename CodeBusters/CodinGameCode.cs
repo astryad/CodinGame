@@ -112,51 +112,49 @@ internal class GameTurn
     {
         if (buster.IsCarryingGhost)
         {
-            double homeDist = ComputeDistanceFromHome(buster);
-            if(homeDist < 1600)
+            var homeDist = ComputeDistanceFromHome(buster);
+            if (homeDist < 1600)
                 return new ReleaseInstruction();
 
-            if (_teamId == 0)
-            {
-                return new MoveInstruction(0, 0);
-            }
-            else
-            {
-                return new MoveInstruction(16000, 9000);
-            }
+            return new GoHomeInstruction(_teamId);
         }
 
-        var ghostInRange = FindGhostInRange(buster);
+        var ghostInRange = FindGhostInBustRange(buster);
         if (ghostInRange != null)
         {
             return new BustIntruction(ghostInRange.Id);
         }
 
         var anyGhost = _ghosts.FirstOrDefault();
-        if(anyGhost != null)
+        if (anyGhost != null)
             return new MoveInstruction(anyGhost.X, anyGhost.Y);
 
-        return new MoveInstruction(8000, 4500);
+        return new MoveInstruction(Rand.Next(16000), Rand.Next(9000));
     }
+
+    public static Random Rand { get; } = new Random();
 
     private double ComputeDistanceFromHome(Buster buster)
     {
         int homeX = _teamId == 0 ? 0 : 16000;
         int homeY = _teamId == 0 ? 0 : 9000;
 
-        var distX = homeX - buster.X;
-        var distY = homeY - buster.Y;
+        return ComputeDistanceFromBuster(buster, homeX, homeY);
+    }
+
+    private double ComputeDistanceFromBuster(Buster buster, int x, int y)
+    {
+        var distX = x - buster.X;
+        var distY = y - buster.Y;
 
         return Math.Sqrt(distX*distX + distY*distY);
     }
 
-    private Ghost FindGhostInRange(Buster buster)
+    private Ghost FindGhostInBustRange(Buster buster)
     {
         foreach (var ghost in _ghosts)
         {
-            var distX = buster.X - ghost.X;
-            var distY = buster.Y - ghost.Y;
-            var dist = Math.Sqrt(distX*distX + distY*distY);
+            var dist = ComputeDistanceFromBuster(buster, ghost.X, ghost.Y);
 
             if (dist > 900 && dist < 1760)
                 return ghost;
@@ -231,6 +229,15 @@ internal class Ghost
 internal interface IBusterInstruction
 {
     string Type { get; }
+}
+
+class GoHomeInstruction : MoveInstruction
+{
+    public GoHomeInstruction(int teamId)
+        : base(teamId == 0 ? 0 : 16000, teamId == 0 ? 0 : 9000)
+    {
+
+    }
 }
 
 class ReleaseInstruction : IBusterInstruction
