@@ -11,7 +11,7 @@ namespace CodeMerger
     {
         static void Main(string[] args)
         {
-            var files = Directory.EnumerateFiles(args[0], @"*.cs");
+            var files = Directory.EnumerateFiles(args[0], @"*.cs", SearchOption.AllDirectories);
 
             var usings = new List<string>();
 

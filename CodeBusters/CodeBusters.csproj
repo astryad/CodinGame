@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,15 +41,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodinGameCode.cs" />
+    <Compile Include="Entities\Buster.cs" />
+    <Compile Include="Instructions\BustIntruction.cs" />
+    <Compile Include="Instructions\StunInstruction.cs" />
+    <Compile Include="SystemConsole.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="GameTurn.cs" />
+    <Compile Include="Entities\Ghost.cs" />
+    <Compile Include="Instructions\GoHomeInstruction.cs" />
+    <Compile Include="Instructions\IBusterInstruction.cs" />
+    <Compile Include="IConsole.cs" />
+    <Compile Include="Instructions\MoveInstruction.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Instructions\ReleaseInstruction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeMerger\CodeMerger.csproj">
+      <Project>{682455ec-b63a-4b18-93ac-7a5b076ecca9}</Project>
+      <Name>CodeMerger</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <MergeExecutable>$(solutionDir)CodeMerger\bin\$(Configuration)\CodeMerger.exe</MergeExecutable>
+    </PropertyGroup>
+    <Exec Command="&quot;$(MergeExecutable)&quot; &quot;$(solutionDir)CodeBusters\\&quot;" />
+  </Target>
 </Project>
